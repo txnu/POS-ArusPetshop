@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class HistoryPage extends StatelessWidget {
@@ -5,119 +6,103 @@ class HistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-            height: 50,
-            child: Row(
-              children: [
-                Text(
-                  "Daftar Riwayat Transaksi",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30),
-                ),
-                Spacer(),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 3),
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.white),
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        hintText: "Cari Riwayat",
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Expanded(
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(10)),
-              child: ListView(
-                children: <Widget>[
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          width: 200,
-                          child: Text(
-                            "Kode Transaksi",
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          width: 200,
-                          child: Text(
-                            "Item",
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          width: 200,
-                          child: Text(
-                            "Waktu",
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          width: 200,
-                          child: Text(
-                            "Total Transaksi",
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  _itemProduk(
-                      kodetransaksi: "ARS0001",
-                      item: "wHISKAS, ...",
-                      waktu: "12:00 PM",
-                      totaltransaksi: "Rp.100.000"),
-                ],
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+          height: 50,
+          child: Row(
+            children: [
+              const Text(
+                "Daftar Riwayat Transaksi",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30),
               ),
-            ),
+              Expanded(
+                flex: 1,
+                child: Container(),
+              ),
+              Expanded(
+                child: search(),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Container(
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.only(left: 18),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+            child: _itemRiwayat(
+                kodetransaksi: "kodetransaksi",
+                item: "item",
+                waktu: "waktu",
+                totaltransaksi: "totaltransaksi")),
+        Container(child: getRiwayatTransaksi()),
+      ],
     );
   }
 
-  Widget _itemProduk(
+  StreamBuilder<QuerySnapshot<Map<String, dynamic>>> getRiwayatTransaksi() {
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        stream: FirebaseFirestore.instance
+            .collection('riwayat_pembelian')
+            .snapshots(),
+        builder: (context, snapshots) {
+          if (snapshots.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: Container(
+                margin:
+                    const EdgeInsets.symmetric(vertical: 80, horizontal: 100),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 80, horizontal: 80),
+                child: const CircularProgressIndicator(),
+              ),
+            );
+          }
+          if (snapshots.hasError) {
+            return const Text(
+              "ERRROR",
+              style: TextStyle(fontSize: 24, color: Colors.white),
+            );
+          }
+          var data_ = snapshots.data!.docs;
+          data_.map((e) => null);
+          return Expanded(
+            child: ListView.separated(
+                itemCount: data_.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.only(left: 18),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Column(
+                        children: [
+                          InkWell(
+                            onTap: () {},
+                            child: _itemRiwayat(
+                              kodetransaksi:
+                                  data_[index].data()['kodetransaksi'],
+                              item: data_[index].data()['item'],
+                              waktu: "Hari ini",
+                              totaltransaksi:
+                                  data_[index].data()['totaltransaksi'],
+                            ),
+                          ),
+                        ],
+                      ));
+                },
+                separatorBuilder: (context, index) => const Divider()),
+          );
+        });
+  }
+
+  Widget _itemRiwayat(
       {required String kodetransaksi,
       required String item,
       required String waktu,
@@ -126,53 +111,70 @@ class HistoryPage extends StatelessWidget {
       children: [
         Expanded(
           flex: 2,
-          child: Container(
-            child: Text(
-              kodetransaksi,
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
+          child: Text(
+            kodetransaksi,
+            style: const TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
         Expanded(
           flex: 2,
-          child: Container(
-            child: Text(
-              item,
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
+          child: Text(
+            item,
+            style: const TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
         Expanded(
           flex: 2,
-          child: Container(
-            child: Text(
-              waktu,
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
+          child: Text(
+            waktu,
+            style: const TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
         Expanded(
           flex: 2,
-          child: Container(
-            child: Text(
-              totaltransaksi,
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
+          child: Text(
+            totaltransaksi,
+            style: const TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
       ],
+    );
+  }
+
+  Widget search() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      width: double.infinity,
+      height: 50,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        color: const Color(0xff1f2029),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.search,
+            color: Colors.white54,
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: TextFormField(
+              style: const TextStyle(color: Colors.white, fontSize: 18),
+              decoration: const InputDecoration(
+                hintText: "Cari Produk",
+                border: InputBorder.none,
+                hintStyle: TextStyle(color: Colors.white),
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }

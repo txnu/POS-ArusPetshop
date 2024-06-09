@@ -34,11 +34,11 @@ class _MainPageState extends State<MainPage> {
       case 'Home':
         return const HomePages();
       case 'Produk':
-        return ProductPage();
+        return const ProductPage();
       case 'Riwayat':
-        return HistoryPage();
+        return const HistoryPage();
       case 'Promo':
-        return PromoPage();
+        return const PromoPage();
       case 'Setting':
         return Container();
 
@@ -60,22 +60,24 @@ class _MainPageState extends State<MainPage> {
       body: Row(
         children: [
           Container(
-            width: 70,
+            width: 80,
             padding: const EdgeInsets.only(top: 24, right: 12, left: 12),
             height: MediaQuery.of(context).size.height,
             child: navbarPage(),
           ),
           Expanded(
+              flex: 1,
               child: Container(
-            margin: const EdgeInsets.only(top: 24, right: 12),
-            padding: const EdgeInsets.only(top: 12, right: 12, left: 12),
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(12), topLeft: Radius.circular(12)),
-              color: Color(0xff17181f),
-            ),
-            child: pageView(),
-          ))
+                margin: const EdgeInsets.only(top: 24, right: 12),
+                padding: const EdgeInsets.only(top: 12, right: 12, left: 15),
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(12),
+                      topLeft: Radius.circular(12)),
+                  color: Color(0xff17181f),
+                ),
+                child: pageView(),
+              ))
         ],
       ),
     );
@@ -87,15 +89,16 @@ class _MainPageState extends State<MainPage> {
         _logo(),
         const SizedBox(height: 20),
         Expanded(
-            child: ListView(
-          children: [
-            itemMenu(menu: 'Beranda', icon: Icons.pets),
-            itemMenu(menu: 'Produk', icon: Icons.format_list_bulleted),
-            itemMenu(menu: 'Riwayat', icon: Icons.history),
-            itemMenu(menu: 'Promo', icon: Icons.discount),
-            itemMenu(menu: 'Setting', icon: Icons.sports_soccer_outlined)
-          ],
-        ))
+          child: ListView(
+            children: [
+              itemMenu(menu: 'Beranda', icon: Icons.pets),
+              itemMenu(menu: 'Produk', icon: Icons.format_list_bulleted),
+              itemMenu(menu: 'Riwayat', icon: Icons.history),
+              itemMenu(menu: 'Promo', icon: Icons.discount),
+              itemMenu(menu: 'Setting', icon: Icons.sports_soccer_outlined)
+            ],
+          ),
+        )
       ],
     );
   }
@@ -104,7 +107,8 @@ class _MainPageState extends State<MainPage> {
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.all(0),
+          margin: const EdgeInsets.symmetric(vertical: 20),
+          padding: const EdgeInsets.all(2),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               color: Colors.yellowAccent),
@@ -115,12 +119,12 @@ class _MainPageState extends State<MainPage> {
           ),
         ),
         const SizedBox(
-          height: 10,
+          height: 8,
         ),
         const Text(
           'POS-Arus Petshop',
           style: TextStyle(
-              color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+              color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
         )
       ],
     );
@@ -141,8 +145,8 @@ class _MainPageState extends State<MainPage> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   color: pageActive == menu
-                      ? Color.fromARGB(255, 85, 85, 62)
-                      : Colors.transparent),
+                      ? const Color.fromARGB(255, 85, 85, 62)
+                      : const Color.fromARGB(0, 33, 32, 32)),
               duration: const Duration(milliseconds: 300),
               curve: Curves.slowMiddle,
               child: Column(

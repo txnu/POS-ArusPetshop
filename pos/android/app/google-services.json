@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "145751939978",
+    "firebase_url": "https://pos-aruspetshop-default-rtdb.firebaseio.com",
+    "project_id": "pos-aruspetshop",
+    "storage_bucket": "pos-aruspetshop.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:145751939978:android:3561d426b01c8c147f4673",
+        "android_client_info": {
+          "package_name": "com.example.pos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5pEOQLduk4j6OtwwLKu0sMP7rpPxzDfk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

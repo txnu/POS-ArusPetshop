@@ -34,6 +34,10 @@ dependencies:
  http: ^1.1.0
  intl: ^0.18.1
  simple_shadow: ^0.3.1
+ firebase_core: ^2.32.0
+ firebase_database: ^10.5.6
+ firebase_analytics: ^10.10.6
+ cloud_firestore: ^4.17.5
 
 dev_dependencies:
  flutter_lints: ^2.0.0

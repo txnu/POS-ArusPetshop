@@ -1,56 +1,144 @@
 import 'package:flutter/material.dart';
-import 'package:pos/Screens/DashboardPage.dart';
 
-class LoginPages extends StatefulWidget {
-  static String routeName = "/login";
-
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPages> {
-  final _formKey = GlobalKey<FormState>();
-
-  late String _email, _password;
+class LoginPages extends StatelessWidget {
+  const LoginPages({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: <Widget>[
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Email'),
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter your email' : null,
-                onSaved: (value) => _email = value!,
+      body: Stack(
+        children: [
+          Container(
+            height: double.infinity,
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 232, 203, 18),
+                  Color(0xff281537),
+                ],
               ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Password'),
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter your password' : null,
-                onSaved: (value) => _password = value!,
+            ),
+            child: const Padding(
+              padding: EdgeInsets.only(top: 60.0, left: 22),
+              child: Text(
+                "POS\nArus Petshop",
+                style: TextStyle(
+                    fontSize: 40,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
               ),
-              ElevatedButton(
-                child: const Text('Login'),
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => DashboardPages()),
-                    );
-                  }
-                },
-              ),
-            ],
+            ),
           ),
-        ),
+          Padding(
+            padding: const EdgeInsets.only(top: 200),
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40),
+                  topRight: Radius.circular(40),
+                ),
+              ),
+              height: 800,
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 180, right: 180),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(
+                        left: 15,
+                        right: 15,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        border: Border.all(
+                          width: 1.0,
+                          color: Colors.grey[900]!,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const TextField(
+                        decoration: InputDecoration(
+                          suffixIcon: Icon(
+                            Icons.check,
+                            color: Colors.grey,
+                          ),
+                          label: Text(
+                            "Username",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 18,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.only(
+                        left: 15,
+                        right: 15,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        border: Border.all(
+                          width: 1.0,
+                          color: Colors.grey[900]!,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const TextField(
+                        decoration: InputDecoration(
+                          suffixIcon: Icon(
+                            Icons.check,
+                            color: Colors.grey,
+                          ),
+                          label: Text(
+                            "Password",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 80,
+                    ),
+                    GestureDetector(
+                      child: Container(
+                        height: 60,
+                        width: 300,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color.fromARGB(255, 232, 203, 18),
+                              Color(0xff281537),
+                            ],
+                          ),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "Masuk",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25,
+                                color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.pushNamed(context, "Dashboard");
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

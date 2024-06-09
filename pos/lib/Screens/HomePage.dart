@@ -31,24 +31,22 @@ class _HomePagesState extends State<HomePages> {
               Container(
                 height: 100,
                 padding: const EdgeInsets.symmetric(vertical: 20),
-                child: Expanded(
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      itemTab(
-                          icon: 'assets/icons/whiskas_adult.png',
-                          title: 'Pakan Kucing',
-                          isActive: true),
-                      itemTab(
-                          icon: 'assets/icons/ayam.png',
-                          title: 'Pakan Ayam',
-                          isActive: false),
-                      itemTab(
-                          icon: 'assets/icons/lele.png',
-                          title: 'Pakan Ikan',
-                          isActive: false),
-                    ],
-                  ),
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    itemTab(
+                        icon: 'assets/icons/whiskas_adult.png',
+                        title: 'Pakan Kucing',
+                        isActive: true),
+                    itemTab(
+                        icon: 'assets/icons/ayam.png',
+                        title: 'Pakan Ayam',
+                        isActive: false),
+                    itemTab(
+                        icon: 'assets/icons/lele.png',
+                        title: 'Pakan Ikan',
+                        isActive: false),
+                  ],
                 ),
               ),
               Expanded(
@@ -135,102 +133,7 @@ class _HomePagesState extends State<HomePages> {
                     ],
                   ),
                 ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    margin: const EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(14),
-                        color: const Color(0xff1f2029)),
-                    child: Column(
-                      children: [
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Sub Total',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                            Text(
-                              'Rp.144.000',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            )
-                          ],
-                        ),
-                        const SizedBox(width: 20),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Pajak',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                            Text(
-                              'Rp.200',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                          ],
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(vertical: 20),
-                          height: 2,
-                          width: double.infinity,
-                          color: Colors.white,
-                        ),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Total',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                            Text(
-                              'Rp.144.000',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                backgroundColor: Colors.deepPurpleAccent,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8))),
-                            onPressed: () {},
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(
-                                  Icons.print,
-                                  size: 16,
-                                ),
-                                SizedBox(
-                                  width: 6,
-                                ),
-                                Text('Cetak Struk')
-                              ],
-                            ))
-                      ],
-                    ),
-                  ),
-                ),
+                const qtyTransaksi(),
               ],
             )),
       ],
@@ -270,10 +173,9 @@ class _HomePagesState extends State<HomePages> {
           ],
         ),
         Expanded(
-            flex: 1,
             child: Container(
-              width: double.infinity,
-            )),
+          width: double.infinity,
+        )),
         Expanded(flex: 1, child: action),
       ],
     );
@@ -283,22 +185,29 @@ class _HomePagesState extends State<HomePages> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       width: double.infinity,
-      height: 40,
+      height: 50,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
-          color: const Color(0xff1f2029)),
-      child: const Row(
+        borderRadius: BorderRadius.circular(18),
+        color: const Color(0xff1f2029),
+      ),
+      child: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.search,
             color: Colors.white54,
           ),
-          SizedBox(
+          const SizedBox(
             width: 10,
           ),
-          Text(
-            'Cari Produk.....',
-            style: TextStyle(color: Colors.white54, fontSize: 12),
+          Expanded(
+            child: TextFormField(
+              style: const TextStyle(color: Colors.white, fontSize: 18),
+              decoration: const InputDecoration(
+                hintText: "Cari Produk",
+                border: InputBorder.none,
+                hintStyle: TextStyle(color: Colors.white),
+              ),
+            ),
           )
         ],
       ),
@@ -373,20 +282,22 @@ class _HomePagesState extends State<HomePages> {
                 color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
           ),
           const SizedBox(
-            height: 8,
+            height: 6,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                price,
-                style: const TextStyle(color: Colors.yellow, fontSize: 16),
-              ),
-              Text(
-                item,
-                style: const TextStyle(color: Colors.white60, fontSize: 12),
-              ),
-            ],
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  price,
+                  style: const TextStyle(color: Colors.yellow, fontSize: 16),
+                ),
+                Text(
+                  item,
+                  style: const TextStyle(color: Colors.white60, fontSize: 12),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -449,6 +360,124 @@ class _HomePagesState extends State<HomePages> {
             style: const TextStyle(
                 fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+// ignore: camel_case_types
+class qtyTransaksi extends StatelessWidget {
+  const qtyTransaksi({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          color: const Color(0xff1f2029)),
+      child: Column(
+        children: [
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Sub Total',
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+              Text(
+                'Rp.144.000',
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              )
+            ],
+          ),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Promo',
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+              Text(
+                'Rp.144.000',
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              )
+            ],
+          ),
+          const SizedBox(width: 20),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Pajak',
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+              Text(
+                'Rp.200',
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ],
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 20),
+            height: 2,
+            width: double.infinity,
+            color: Colors.white,
+          ),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Total',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+              Text(
+                'Rp.144.000',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.deepPurpleAccent,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8))),
+            onPressed: () {},
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.print,
+                  size: 16,
+                ),
+                SizedBox(
+                  width: 6,
+                ),
+                Text('Cetak Struk')
+              ],
+            ),
+          )
         ],
       ),
     );
