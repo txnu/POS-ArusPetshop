@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:pos/Screens/DashboardPage.dart';
+import 'package:pos/Components/DashboardPage.dart';
 import 'package:pos/Screens/HistoryPage.dart';
 import 'package:pos/Screens/LoginPage.dart';
 import 'package:pos/Screens/ProductPage.dart';
@@ -17,7 +17,7 @@ void main() async {
     routes: {
       "/": (context) => const LoginPages(),
       "Dashboard": (context) => const DashboardPages(),
-      "Produk": (context) => const ProductPage(),
+      "Produk": (context) =>  ProductPage(),
       "Riwayat": (context) => const HistoryPage(),
       "Promo": (context) => const PromoPage(),
     },

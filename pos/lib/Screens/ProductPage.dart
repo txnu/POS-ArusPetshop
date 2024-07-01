@@ -1,8 +1,15 @@
+// ignore_for_file: unnecessary_string_interpolations
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:pos/Components/produkComponent.dart';
+import 'package:pos/Models/get_produk.dart';
 
+// ignore: must_be_immutable
 class ProductPage extends StatelessWidget {
-  const ProductPage({super.key});
+  ProductPage({super.key});
+
+  var db = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -43,16 +50,17 @@ class ProductPage extends StatelessWidget {
             kategori: "Kategori",
             jumlah: "Jumlah",
             harga: "Harga",
+            image: "Gambar",
           ),
         ),
-        getProduk()
+        Expanded(child: getProduk())
       ],
     );
   }
 
   StreamBuilder<QuerySnapshot<Map<String, dynamic>>> getProduk() {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      stream: FirebaseFirestore.instance.collection('produk').snapshots(),
+      stream: db.collection('produk').snapshots(),
       builder: (context, snapshots) {
         if (snapshots.connectionState == ConnectionState.waiting) {
           return Center(
@@ -64,9 +72,8 @@ class ProductPage extends StatelessWidget {
           );
         }
         if (snapshots.hasError) {
-          return const Text(
-            "ERRROR",
-            style: TextStyle(fontSize: 24, color: Colors.white),
+          return const Center(
+            child: CircularProgressIndicator(),
           );
         }
         var data_ = snapshots.data!.docs;
@@ -76,25 +83,42 @@ class ProductPage extends StatelessWidget {
           child: ListView.separated(
             itemCount: data_.length,
             itemBuilder: (context, index) {
+              Produk produk = Produk.fromSnapshot(data_[index]);
               return Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  padding: const EdgeInsets.only(left: 18),
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(10)),
-                  child: Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {},
-                        child: _itemProduk(
-                          kodeproduk: data_[index].data()['kodeproduk'],
-                          namaproduk: data_[index].data()['namaproduk'],
-                          kategori: data_[index].data()['kategori'].to,
-                          jumlah: data_[index].data()['jumlah'].toString(),
-                          harga: data_[index].data()['harga'],
-                        ),
-                      ),
-                    ],
-                  ));
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.only(left: 18),
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                child: Column(
+                  children: [
+                    FutureBuilder(
+                      future: getNamaKategori(produk.kategori ?? ""),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else {
+                          String namaKategori = snapshot.data as String;
+                          return GestureDetector(
+                            onTap: () {},
+                            child: _itemProduk(
+                              kodeproduk: produk.kodeproduk,
+                              namaproduk:
+                                  truncateWithEllipsis(15, produk.namaproduk),
+                              kategori: namaKategori,
+                              jumlah: produk.jumlah.toString(),
+                              harga: produk.formattedHarga,
+                              image: truncateWithEllipsis(10, produk.image),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              );
             },
             separatorBuilder: (context, index) => const Divider(),
           ),
@@ -108,7 +132,8 @@ class ProductPage extends StatelessWidget {
       required String namaproduk,
       required String kategori,
       required String jumlah,
-      required String harga}) {
+      required String harga,
+      required String image}) {
     return Row(
       children: [
         Expanded(
@@ -133,7 +158,7 @@ class ProductPage extends StatelessWidget {
         Expanded(
           flex: 3,
           child: Text(
-            kategori,
+            kategori ?? "",
             style: const TextStyle(
                 fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
           ),
@@ -154,40 +179,35 @@ class ProductPage extends StatelessWidget {
                 fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
+        Expanded(
+          flex: 3,
+          child: Text(
+            image,
+            style: const TextStyle(
+                fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+        ),
       ],
     );
   }
 
-  Widget search() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      width: double.infinity,
-      height: 50,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        color: const Color(0xff1f2029),
-      ),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.search,
-            color: Colors.white54,
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          Expanded(
-            child: TextFormField(
-              style: const TextStyle(color: Colors.white, fontSize: 18),
-              decoration: const InputDecoration(
-                hintText: "Cari Produk",
-                border: InputBorder.none,
-                hintStyle: TextStyle(color: Colors.white),
-              ),
-            ),
-          )
-        ],
-      ),
-    );
+  Future<String> getNamaKategori(String kategoriId) async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await db.collection('kategori').doc(kategoriId).get();
+      if (snapshot.exists) {
+        return snapshot.data()?['namakategori'] ?? 'Unknown';
+      } else {
+        return 'Unknown';
+      }
+    } catch (e) {
+      return 'Error';
+    }
+  }
+
+  String truncateWithEllipsis(int cutoff, String myString) {
+    return (myString.length <= cutoff)
+        ? myString
+        : '${myString.substring(0, cutoff)}...';
   }
 }

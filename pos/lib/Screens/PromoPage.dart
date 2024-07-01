@@ -20,16 +20,15 @@ class PromoPage extends StatelessWidget {
               )
             ],
           ),
-          _itemPromo(),
+          ItemPromo(),
         ],
       ),
     );
   }
 }
 
-// ignore: camel_case_types
-class _itemPromo extends StatelessWidget {
-  const _itemPromo();
+class ItemPromo extends StatelessWidget {
+  const ItemPromo({super.key});
 
   @override
   Widget build(BuildContext context) {

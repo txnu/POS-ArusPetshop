@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:pos/Models/get_Transaksi.dart';
 
 class HistoryPage extends StatelessWidget {
   const HistoryPage({super.key});
@@ -42,7 +43,9 @@ class HistoryPage extends StatelessWidget {
                 item: "item",
                 waktu: "waktu",
                 totaltransaksi: "totaltransaksi")),
-        Container(child: getRiwayatTransaksi()),
+        Expanded(
+          child: getRiwayatTransaksi(),
+        ),
       ],
     );
   }
@@ -72,30 +75,33 @@ class HistoryPage extends StatelessWidget {
           }
           var data_ = snapshots.data!.docs;
           data_.map((e) => null);
+
           return Expanded(
             child: ListView.separated(
                 itemCount: data_.length,
                 itemBuilder: (context, index) {
+                  Transaksi riwayatTransaksi =
+                      Transaksi.fromSnapshot(data_[index]);
                   return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      padding: const EdgeInsets.only(left: 18),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Column(
-                        children: [
-                          InkWell(
-                            onTap: () {},
-                            child: _itemRiwayat(
-                              kodetransaksi:
-                                  data_[index].data()['kodetransaksi'],
-                              item: data_[index].data()['item'],
-                              waktu: "Hari ini",
-                              totaltransaksi:
-                                  data_[index].data()['totaltransaksi'],
-                            ),
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    padding: const EdgeInsets.only(left: 18),
+                    decoration:
+                        BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                    child: Column(
+                      children: [
+                        InkWell(
+                          onTap: () {},
+                          child: _itemRiwayat(
+                            kodetransaksi: riwayatTransaksi.kodetransaksi,
+                            item: riwayatTransaksi.item,
+                            waktu: riwayatTransaksi.formattedWaktu,
+                            totaltransaksi:
+                                riwayatTransaksi.formattedTotalTransaksi,
                           ),
-                        ],
-                      ));
+                        ),
+                      ],
+                    ),
+                  );
                 },
                 separatorBuilder: (context, index) => const Divider()),
           );

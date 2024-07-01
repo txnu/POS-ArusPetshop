@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pos/Components/produkComponent.dart';
+import 'package:pos/Models/get_produk.dart';
 
 class HomePages extends StatefulWidget {
   const HomePages({super.key});
@@ -10,6 +13,8 @@ class HomePages extends StatefulWidget {
 }
 
 class _HomePagesState extends State<HomePages> {
+  Produk? selectedProduk;
+  List<Map<String, dynamic>> transaksiList = [];
   DateTime now = DateTime.now();
   String formattedDate = DateFormat.yMMMMEEEEd().format(DateTime.now());
 
@@ -50,35 +55,54 @@ class _HomePagesState extends State<HomePages> {
                 ),
               ),
               Expanded(
-                child: GridView.count(
-                  crossAxisCount: 4,
-                  childAspectRatio: (1 / 1.2),
-                  children: [
-                    _item(
-                      image: 'assets/items/whiskas.png',
-                      title: 'Whiskas Adult',
-                      price: 'Rp.87.000',
-                      item: '11 pcs',
-                    ),
-                    _item(
-                      image: 'assets/items/whiskas.png',
-                      title: 'Whiskas Kitten',
-                      price: 'Rp.87.000',
-                      item: '11 pcs',
-                    ),
-                    _item(
-                      image: 'assets/items/me-o-tuna-adult.png',
-                      title: 'Me-O Tuna Adult',
-                      price: 'Rp.57.000',
-                      item: '8 pcs',
-                    ),
-                    _item(
-                      image: 'assets/items/me-o-tuna-adult.png',
-                      title: 'Me-O Tuna Kitten',
-                      price: 'Rp.57.000',
-                      item: '8 pcs',
-                    ),
-                  ],
+                child: StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('produk')
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+
+                    var produk_ = snapshot.data!.docs;
+
+                    return GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4,
+                          childAspectRatio: (1 / 1.2),
+                        ),
+                        itemCount: produk_.length,
+                        itemBuilder: (context, index) {
+                          var data = produk_[index].data();
+                          Produk produk = Produk(
+                            kodeproduk: data.containsKey('kodeproduk')
+                                ? data['kodeproduk']
+                                : '',
+                            namaproduk: data.containsKey('namaproduk')
+                                ? data['namaproduk']
+                                : '',
+                            kategori: data.containsKey('idkategori')
+                                ? data['idkategori']
+                                : '',
+                            harga:
+                                data.containsKey('harga') ? data['harga'] : 0,
+                            jumlah:
+                                data.containsKey('jumlah') ? data['jumlah'] : 0,
+                            image:
+                                data.containsKey('image') ? data['image'] : '',
+                          );
+                          return _item(
+                            image: 'assets/items/whiskas.png',
+                            title: produk.namaproduk,
+                            price: produk.formattedHarga,
+                            item: produk.jumlah.toString(),
+                            onTap: () => addToTransaksi(produk),
+                          );
+                        });
+                  },
                 ),
               ),
             ],
@@ -86,56 +110,41 @@ class _HomePagesState extends State<HomePages> {
         ),
         Expanded(flex: 1, child: Container()),
         Expanded(
-            flex: 5,
-            child: Column(
-              children: [
-                topMenu(
-                  title: 'Transaksi',
-                  subTitle: 'Tabel Transaksi',
-                  action: Container(),
+          flex: 5,
+          child: Column(
+            children: [
+              topMenu(
+                title: 'Transaksi',
+                subTitle: 'Tabel Transaksi',
+                action: Container(),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: transaksiList.length,
+                  itemBuilder: (context, index) {
+                    var item = transaksiList[index];
+                    return transaksi(
+                      image: item['image'],
+                      title: item['title'],
+                      qty: item['qty'].toString(),
+                      price: item['formattedPrice'].toString(),
+                      onDismissed: () {
+                        setState(() {
+                          transaksiList
+                              .removeAt(index); // Hapus item dari transaksiList
+                        });
+                      },
+                    );
+                  },
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Expanded(
-                  child: ListView(
-                    children: [
-                      transaksi(
-                          image: 'assets/items/whiskas.png',
-                          title: 'Whiskas Adult',
-                          qty: '2',
-                          price: 'Rp.87.000'),
-                      transaksi(
-                          image: 'assets/items/me-o-tuna-adult.png',
-                          title: 'Me-O Tuna Adult',
-                          qty: '3',
-                          price: 'Rp.57.000'),
-                      transaksi(
-                          image: 'assets/items/me-o-tuna-adult.png',
-                          title: 'Me-O Tuna Adult',
-                          qty: '3',
-                          price: 'Rp.57.000'),
-                      transaksi(
-                          image: 'assets/items/me-o-tuna-adult.png',
-                          title: 'Me-O Tuna Adult',
-                          qty: '3',
-                          price: 'Rp.57.000'),
-                      transaksi(
-                          image: 'assets/items/me-o-tuna-adult.png',
-                          title: 'Me-O Tuna Kitten',
-                          qty: '3',
-                          price: 'Rp.57.000'),
-                      transaksi(
-                          image: 'assets/items/whiskas.png',
-                          title: 'Whiskas Kitten',
-                          qty: '3',
-                          price: 'Rp.100.000'),
-                    ],
-                  ),
-                ),
-                const qtyTransaksi(),
-              ],
-            )),
+              ),
+              const qtyTransaksi(),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -181,188 +190,212 @@ class _HomePagesState extends State<HomePages> {
     );
   }
 
-  Widget search() {
+//Widget itemTab
+  Widget itemTab(
+      {required String icon, required String title, required bool isActive}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      width: double.infinity,
-      height: 50,
+      width: 180,
+      margin: const EdgeInsets.only(right: 26),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        color: const Color(0xff1f2029),
-      ),
+          borderRadius: BorderRadius.circular(10),
+          color: const Color(0xff1f2029),
+          border: isActive
+              ? Border.all(color: Colors.yellowAccent, width: 3)
+              : Border.all(color: const Color(0xff1f2029), width: 3)),
       child: Row(
         children: [
-          const Icon(
-            Icons.search,
-            color: Colors.white54,
+          Image.asset(
+            icon,
+            width: 30,
           ),
           const SizedBox(
-            width: 10,
+            width: 5,
           ),
-          Expanded(
-            child: TextFormField(
-              style: const TextStyle(color: Colors.white, fontSize: 18),
-              decoration: const InputDecoration(
-                hintText: "Cari Produk",
-                border: InputBorder.none,
-                hintStyle: TextStyle(color: Colors.white),
-              ),
-            ),
+          Text(
+            title,
+            style: const TextStyle(
+                fontSize: 13, color: Colors.white, fontWeight: FontWeight.bold),
           )
         ],
       ),
     );
   }
 
-//Widget itemTab
-  Widget itemTab(
-      {required String icon, required String title, required bool isActive}) {
-    return Expanded(
+//Widget _item
+  Widget _item({
+    required String image,
+    required String title,
+    required String price,
+    required String item,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
       child: Container(
-        width: 180,
-        margin: const EdgeInsets.only(right: 26),
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+        margin: const EdgeInsets.only(right: 30, bottom: 30),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: const Color(0xff1f2029),
-            border: isActive
-                ? Border.all(color: Colors.yellowAccent, width: 3)
-                : Border.all(color: const Color(0xff1f2029), width: 3)),
-        child: Row(
+          borderRadius: BorderRadius.circular(18),
+          color: const Color(0xff1f2029),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset(
-              icon,
-              width: 30,
+            Container(
+              height: 130,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  image: DecorationImage(
+                      image: AssetImage(image), fit: BoxFit.cover)),
             ),
             const SizedBox(
-              width: 5,
+              height: 10,
             ),
             Text(
               title,
               style: const TextStyle(
-                  fontSize: 13,
                   color: Colors.white,
-                  fontWeight: FontWeight.bold),
-            )
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14),
+            ),
+            const SizedBox(
+              height: 6,
+            ),
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    price,
+                    style: const TextStyle(color: Colors.yellow, fontSize: 16),
+                  ),
+                  Text(
+                    item,
+                    style: const TextStyle(color: Colors.white60, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-//Widget _item
-  Widget _item(
-      {required String image,
-      required String title,
-      required String price,
-      required String item}) {
-    return Container(
-      margin: const EdgeInsets.only(right: 30, bottom: 30),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        color: const Color(0xff1f2029),
+//Widget transaksi
+  Widget transaksi({
+    required String image,
+    required String title,
+    required String qty,
+    required String price,
+    required Function() onDismissed,
+  }) {
+    return Dismissible(
+      key:
+          UniqueKey(), // Key unik untuk setiap item, diperlukan oleh Dismissible
+      direction: DismissDirection.startToEnd, // Arah geser untuk menghapus
+      onDismissed: (direction) {
+        onDismissed(); // Panggil fungsi yang akan menangani penghapusan item
+      },
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20.0),
+        color: Colors.red,
+        child: const Icon(
+          Icons.delete,
+          color: Colors.white,
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 130,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        margin: const EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          color: const Color(0xff1f2029),
+        ),
+        child: Row(
+          children: [
+            Container(
+              height: 60,
+              width: 60,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
                 image: DecorationImage(
-                    image: AssetImage(image), fit: BoxFit.cover)),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Text(
-            title,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-          ),
-          const SizedBox(
-            height: 6,
-          ),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  price,
-                  style: const TextStyle(color: Colors.yellow, fontSize: 16),
-                ),
-                Text(
-                  item,
-                  style: const TextStyle(color: Colors.white60, fontSize: 12),
-                ),
-              ],
+                    image: AssetImage(image), fit: BoxFit.cover),
+              ),
             ),
-          ),
-        ],
+            const SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  const SizedBox(
+                    height: 2,
+                  ),
+                  Text(
+                    price,
+                    style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              '$qty X',
+              style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-//Widget transaksi
-  Widget transaksi(
-      {required String image,
-      required String title,
-      required String qty,
-      required String price}) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        color: const Color(0xff1f2029),
-      ),
-      child: Row(
-        children: [
-          Container(
-            height: 60,
-            width: 60,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              image:
-                  DecorationImage(image: AssetImage(image), fit: BoxFit.cover),
-            ),
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  price,
-                  style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            '$qty x',
-            style: const TextStyle(
-                fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-        ],
-      ),
-    );
+  void addToTransaksi(Produk produk) {
+    setState(() {
+      int existingIndex = transaksiList
+          .indexWhere((item) => item['title'] == produk.namaproduk);
+
+      if (existingIndex != -1) {
+        // Jika produk sudah ada, tambahkan ke kuantitasnya
+        transaksiList[existingIndex]['qty'] =
+            transaksiList[existingIndex]['qty'] += 1;
+        transaksiList[existingIndex]['price'] =
+            transaksiList[existingIndex]['qty'] * produk.harga;
+        transaksiList[existingIndex]['formattedPrice'] =
+            formatCurrency(transaksiList[existingIndex]['price']);
+      } else {
+        // Jika produk belum ada, tambahkan produk baru
+        transaksiList.add({
+          'image': 'assets/items/whiskas.png',
+          'title': produk.namaproduk,
+          'qty': 1, // Default quantity to 1
+          'price': produk.harga,
+          'formattedPrice': formatCurrency(
+              produk.harga), // Total harga awal sesuai dengan harga produk
+        });
+      }
+    });
+  }
+
+  String formatCurrency(int number) {
+    final format =
+        NumberFormat.currency(locale: 'id', symbol: 'Rp', decimalDigits: 0);
+    return format.format(number);
   }
 }
 
@@ -455,6 +488,28 @@ class qtyTransaksi extends StatelessWidget {
           ),
           const SizedBox(
             height: 20,
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.deepPurpleAccent,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8))),
+            onPressed: () {},
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.push_pin,
+                  size: 16,
+                ),
+                SizedBox(
+                  width: 6,
+                ),
+                Text('Transaksi')
+              ],
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
